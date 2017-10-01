@@ -25,11 +25,87 @@
     <div id="app">
       {{ message }}
     </div>
+
+    <!-- 计算属性 -->
+    <div id="app2">
+      <p>Original message: "{{ message }}"</p>
+      <p>Computed reversed message: "{{ reversedMessage }}"</p>
+      <p>{{ now }}</p>
+    </div>
+
+    <!-- 方法 -->
+    <div id="app3">
+      <p>Original message: "{{ message }}"</p>
+      <p>Computed reversed message: "{{ reversedMessage() }}"</p>
+      <p>{{ now() }}</p>
+    </div>
+
+    <!-- 被观察的属性 -->
+    <div id="app4">
+      {{ fullName }}
+    </div>
+
     <script>
      var app = new Vue({
        el: '#app',
        data: {
          message: 'Hello Vue!'
+       }
+     })
+
+     var app2 = new Vue({
+       el: '#app2',
+       data: {
+         message: 'Hello Vue!'
+       },
+       // 模板内的表达式是非常便利的，但是它们实际上是用于简单运算的。
+       // 在模板中放入太多的逻辑会让模板过重且难以维护。
+       // 对于任何复杂逻辑，你都应当使用计算属性
+       // 计算属性是基于它们的依赖进行缓存的。
+       // 计算属性只有在它的相关依赖发生改变时才会重新求值。
+       // 如果你不希望有缓存，请用方法来替代。
+       // 计算属性默认只有 getter ，不过在需要时你也可以提供一个 setter
+       computed: {
+         reversedMessage: function(){
+           return this.message.split('').reverse().join('')
+         },
+         now: function(){
+           return Date.now()
+         }
+       }
+     })
+
+     var app3 = new Vue({
+       el: '#app3',
+       data: {
+         message: 'Hello Vue!'
+       },
+       methods: {
+         reversedMessage: function(){
+           return this.message.split('').reverse().join('')
+         },
+         now: function(){
+           return Date.now()
+         }
+       }
+     })
+
+     var app4 = new Vue({
+       el: '#app4',
+       data: {
+         firstName: 'Foo',
+         lastName: 'Bar',
+         fullName: 'Foo Bar'
+       },
+       // Vue 确实提供了一种更通用的方式来观察和响应 Vue 实例上的数据变动：watch 属性
+       // 通常更好的想法是使用计算属性而不是命令式的 watch 回调
+       watch: {
+         firstName: function(val){
+           this.fullName = val + ' ' + this.lastName
+         },
+         lastName: function(val){
+           this.fullName = this.firstName + ' ' + val
+         }
        }
      })
     </script>
